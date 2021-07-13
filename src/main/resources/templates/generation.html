@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Генерация</title>
+<div th:replace="~{commons :: head}"></div>
+</head>
+<body>
+
+	<div th:replace="~{commons :: nav}"></div>
+
+
+	<section>
+		<div class="container">
+			<div class="row">
+				<div class="col">
+					<div id="accordion">
+						<div class="card" th:each="arr2, i:${list}">
+							<div class="card-header">
+								<h5 class="mb-0">
+									<button class="btn btn-link" data-toggle="collapse"
+										th:data-target="'#collapseOne'+${i.index}" aria-expanded="true"
+										th:aria-controls="'collapseOne'+${i.index}"
+										th:text="'День недели: ' + ${i.index+1}">Разворачиваемая панель #1
+									</button>
+								</h5>
+							</div>
+
+							<div th:id="'collapseOne'+${i.index}" class="collapse"
+								aria-labelledby="headingOne" data-parent="#accordion">
+								<div class="card-body">
+									<table class="table table-striped table-responsive-md"
+										th:each="arr:${arr2}">
+										<thead>
+											<tr>
+												<th>Класс</th>
+												<th>Номер урока</th>
+												<th>Предмет и учитель</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr th:each="entity : ${arr}">
+												<div th:if="${entity!=null}">
+												<td th:text="${entity.classes}"></td>
+												<td th:text="${entity.time+1}"></td>
+												<td
+													th:text="${entity.subject.name}+' ('+${entity.teacher.name}+')'"></td>
+												</div>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>						
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+<!-- 	<section class="list"> -->
+<!-- 		<div class="container my-2"> -->
+<!-- 			<div class="card"> -->
+<!-- 				<div class="row"> -->
+<!-- 					<div class="card-body col"> -->
+<!-- 						<h2 class="text-center">Генерация расписания</h2> -->
+<!-- 						<div class="container my-5"> -->
+<!-- 							<div class="col-md-12"> -->
+<!-- 								<div class="overScroll" th:each="arr2, i:${list}"> -->
+<!-- 									<div th:text="'День недели (с понедельника): ' + ${i.index+1}"></div> -->
+<!-- 									<table class="table table-striped table-responsive-md" -->
+<!-- 										th:each="arr:${arr2}"> -->
+<!-- 										<thead> -->
+<!-- 											<tr> -->
+<!-- 												<th>Класс</th> -->
+<!-- 												<th>Номер урока</th> -->
+<!-- 												<th>Предмет и учитель</th> -->
+<!-- 											</tr> -->
+<!-- 										</thead> -->
+<!-- 										<tbody> -->
+<!-- 											<tr th:each="entity : ${arr}"> -->
+<!-- 												<div th:if="${entity!=null}"> -->
+<!-- 												<td th:text="${entity.classes}"></td> -->
+<!-- 												<td th:text="${entity.time+1}"></td> -->
+<!-- 												<td -->
+<!-- 													th:text="${entity.subject.name}+' ('+${entity.teacher.name}+')'"></td> -->
+<!-- 												</div> -->
+<!-- 											</tr> -->
+<!-- 										</tbody> -->
+<!-- 									</table> -->
+<!-- 								</div> -->
+<!-- 							</div> -->
+<!-- 						</div> -->
+<!-- 					</div> -->
+<!-- 				</div> -->
+<!-- 			</div> -->
+<!-- 		</div> -->
+<!-- 	</section> -->
+
+
+
+
+
+	<div th:replace="~{commons :: footer}"></div>
+
+</body>
+</html>
