@@ -21,39 +21,42 @@ import lombok.Data;
 @Entity
 public class Teacher extends AbstractEntity {
 
-	private String name;
+  private String name;
 
-    @Fetch(value = FetchMode.SELECT)
-	@ManyToMany(cascade = { CascadeType.PERSIST }, fetch = FetchType.LAZY)	
-	private Set<Subject> subjects = new HashSet<>();
+  @Fetch(value = FetchMode.SELECT)
+  @ManyToMany(cascade = {CascadeType.PERSIST}, fetch = FetchType.LAZY)
+  private Set<Subject> subjects = new HashSet<>();
 
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "teacher", cascade = CascadeType.PERSIST)
-	private List<Lesson> lessons = new ArrayList<>();
+  @OneToMany(fetch = FetchType.EAGER, mappedBy = "teacher", cascade = CascadeType.PERSIST)
+  private List<Lesson> lessons = new ArrayList<>();
 
-	@Override
-	public String toString() {
-		return name;
-	}
+  @Override
+  public String toString() {
+    return name;
+  }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
+  @Override
+  public boolean equals(Object obj) {
+		if (this == obj) {
 			return true;
-		if (!super.equals(obj))
+		}
+		if (!super.equals(obj)) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (getClass() != obj.getClass()) {
 			return false;
-		Teacher other = (Teacher) obj;
-		return Objects.equals(name, other.name);
-	}
+		}
+    Teacher other = (Teacher) obj;
+    return Objects.equals(name, other.name);
+  }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + Objects.hash(name);
-		return result;
-	}
-	
-	
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = super.hashCode();
+    result = prime * result + Objects.hash(name);
+    return result;
+  }
+
+
 }

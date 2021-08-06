@@ -15,36 +15,36 @@ import com.hescha.teacher_workload_accounting.service.SubjectService;
 @RequestMapping("/subjects")
 public class SubjectController {
 
-	@Autowired
-	private SubjectService service;
+  @Autowired
+  private SubjectService service;
 
-	@GetMapping
-	public String getList(Model model) {
-		model.addAttribute("list", service.repository.findAll());
-		return "subjects";
-	}
+  @GetMapping
+  public String getList(Model model) {
+    model.addAttribute("list", service.repository.findAll());
+    return "subjects";
+  }
 
-	@RequestMapping(path = { "/edit", "/edit/{id}" })
-	public String edit(Model model, @PathVariable(name = "id", required = false) Long id) {
-		if (id != null) {
-			Subject entity = service.read(id);
-			model.addAttribute("entity", entity);
-		} else {
-			model.addAttribute("entity", new Subject());
-		}
-		return "subjects-add-edit";
-	}
+  @RequestMapping(path = {"/edit", "/edit/{id}"})
+  public String edit(Model model, @PathVariable(name = "id", required = false) Long id) {
+    if (id != null) {
+      Subject entity = service.read(id);
+      model.addAttribute("entity", entity);
+    } else {
+      model.addAttribute("entity", new Subject());
+    }
+    return "subjects-add-edit";
+  }
 
-	@RequestMapping(path = "/delete/{id}")
-	public String delete(Model model, @PathVariable("id") Long id) {
-		service.delete(id);
-		return "redirect:/subjects";
-	}
+  @RequestMapping(path = "/delete/{id}")
+  public String delete(Model model, @PathVariable("id") Long id) {
+    service.delete(id);
+    return "redirect:/subjects";
+  }
 
-	@RequestMapping(path = "/create", method = RequestMethod.POST)
-	public String createOrUpdate(Subject entity) {
-		service.create(entity);
-		return "redirect:/subjects";
-	}
+  @RequestMapping(path = "/create", method = RequestMethod.POST)
+  public String createOrUpdate(Subject entity) {
+    service.create(entity);
+    return "redirect:/subjects";
+  }
 
 }

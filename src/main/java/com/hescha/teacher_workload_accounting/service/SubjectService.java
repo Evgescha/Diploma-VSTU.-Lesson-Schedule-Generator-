@@ -11,12 +11,12 @@ import com.hescha.teacher_workload_accounting.repository.SubjectRepository;
 @Service
 public class SubjectService extends CrudImpl<Subject> {
 
-    public SubjectRepository repository;
+  public SubjectRepository repository;
 
-    @Autowired
-    public SubjectService(SubjectRepository repository) {
-        super(repository);
-        this.repository = repository;
-    }
+  @Autowired
+  public SubjectService(SubjectRepository repository) {
+    super(repository);
+    this.repository = repository;
+  }
 
 }

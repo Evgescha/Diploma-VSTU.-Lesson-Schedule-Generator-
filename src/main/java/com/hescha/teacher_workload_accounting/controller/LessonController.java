@@ -15,36 +15,36 @@ import com.hescha.teacher_workload_accounting.service.LessonService;
 @RequestMapping("/lessons")
 public class LessonController {
 
-	@Autowired
-	private LessonService service;
+  @Autowired
+  private LessonService service;
 
-	@GetMapping
-	public String getList(Model model) {
-		model.addAttribute("list", service.repository.findAll());
-		return "lessons";
-	}
+  @GetMapping
+  public String getList(Model model) {
+    model.addAttribute("list", service.repository.findAll());
+    return "lessons";
+  }
 
-	@RequestMapping(path = { "/edit", "/edit/{id}" })
-	public String edit(Model model, @PathVariable(name = "id", required = false) Long id) {
+  @RequestMapping(path = {"/edit", "/edit/{id}"})
+  public String edit(Model model, @PathVariable(name = "id", required = false) Long id) {
 
-		if (id != null) {
-			Lesson entity = service.read(id);
-			model.addAttribute("entity", entity);
-		} else {
-			model.addAttribute("entity", new Lesson());
-		}
-		return "lessons-add-edit";
-	}
+    if (id != null) {
+      Lesson entity = service.read(id);
+      model.addAttribute("entity", entity);
+    } else {
+      model.addAttribute("entity", new Lesson());
+    }
+    return "lessons-add-edit";
+  }
 
-	@RequestMapping(path = "/delete/{id}")
-	public String delete(Model model, @PathVariable("id") Long id) {
-		service.delete(id);
-		return "redirect:/lessons";
-	}
+  @RequestMapping(path = "/delete/{id}")
+  public String delete(Model model, @PathVariable("id") Long id) {
+    service.delete(id);
+    return "redirect:/lessons";
+  }
 
-	@RequestMapping(path = "/create", method = RequestMethod.POST)
-	public String createOrUpdate(Lesson entity) {
-		service.create(entity);
-		return "redirect:/lessons";
-	}
+  @RequestMapping(path = "/create", method = RequestMethod.POST)
+  public String createOrUpdate(Lesson entity) {
+    service.create(entity);
+    return "redirect:/lessons";
+  }
 }

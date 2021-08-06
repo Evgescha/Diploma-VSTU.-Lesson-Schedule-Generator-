@@ -11,12 +11,12 @@ import com.hescha.teacher_workload_accounting.repository.ClassesSubjectTimeOnWee
 @Service
 public class ClassesSubjectTimeOnWeekService extends CrudImpl<ClassesSubjectTimeOnWeek> {
 
-    public ClassesSubjectTimeOnWeekRepository repository;
+  public ClassesSubjectTimeOnWeekRepository repository;
 
-    @Autowired
-    public ClassesSubjectTimeOnWeekService(ClassesSubjectTimeOnWeekRepository repository) {
-        super(repository);
-        this.repository = repository;
-    }
+  @Autowired
+  public ClassesSubjectTimeOnWeekService(ClassesSubjectTimeOnWeekRepository repository) {
+    super(repository);
+    this.repository = repository;
+  }
 
 }

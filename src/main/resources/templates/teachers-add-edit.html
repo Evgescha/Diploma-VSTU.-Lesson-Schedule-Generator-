@@ -27,7 +27,7 @@
 								<tr>
 									<th><label class="mx-2">Предметы, которые ведет</label></th>
 									<td>										
-										<select name="subjectId" id="categ" multiple="multiple" required>
+										<select name="subjectId" id="categ" multiple="multiple" required style="height: 400px;">
 											<option name="subjectId" th:each="cat : ${subjects}" th:value="${cat.id}" th:text="${cat.name}"
 												th:selected="${entity.subjects.contains(cat)}"></option>
 										</select>

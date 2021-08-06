@@ -11,12 +11,12 @@ import com.hescha.teacher_workload_accounting.repository.TeacherRepository;
 @Service
 public class TeacherService extends CrudImpl<Teacher> {
 
-    public TeacherRepository repository;
+  public TeacherRepository repository;
 
-    @Autowired
-    public TeacherService(TeacherRepository repository) {
-        super(repository);
-        this.repository = repository;
-    }
+  @Autowired
+  public TeacherService(TeacherRepository repository) {
+    super(repository);
+    this.repository = repository;
+  }
 
 }

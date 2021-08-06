@@ -17,7 +17,6 @@ import com.hescha.teacher_workload_accounting.entity.Subject;
 import com.hescha.teacher_workload_accounting.entity.Teacher;
 import com.hescha.teacher_workload_accounting.service.ClassesService;
 import com.hescha.teacher_workload_accounting.service.ClassesSubjectTimeOnWeekService;
-import com.hescha.teacher_workload_accounting.service.LessonService;
 import com.hescha.teacher_workload_accounting.service.SubjectService;
 import com.hescha.teacher_workload_accounting.service.TeacherService;
 
@@ -25,115 +24,138 @@ import com.hescha.teacher_workload_accounting.service.TeacherService;
 @RequestMapping("/generation")
 public class GenerationController {
 
-	@Autowired
-	private ClassesSubjectTimeOnWeekService classesSubjectTimeOnWeekService;
+  @Autowired
+  private ClassesSubjectTimeOnWeekService classesSubjectTimeOnWeekService;
 
-	@Autowired
-	private SubjectService subjectService;
+  @Autowired
+  private SubjectService subjectService;
 
-	@Autowired
-	private ClassesService classesService;
-	
-	@Autowired
-	private TeacherService teacherService;
-	
-	
-	List<Subject> subjects;
-	List<Teacher> teachers;
-	List<Classes> classes;
-	List<ClassesSubjectTimeOnWeek> subjectTimeOnWeeks;
-	// день недели
-	// класс
-	// урок
-	Lesson[][][] lessons = new Lesson[5][11][7];
+  @Autowired
+  private ClassesService classesService;
 
-	Random rand = new Random();
+  @Autowired
+  private TeacherService teacherService;
 
-	
-	@GetMapping
-	public String getList(Model model) {
-		lessons = new Lesson[5][11][7];
-		subjects = subjectService.readAll();
-		teachers = teacherService.readAll();
-		classes = classesService.readAll();
-		subjectTimeOnWeeks = classesSubjectTimeOnWeekService.readAll();
-		
-		makeList();
-		model.addAttribute("list", lessons);
-		
-		return "generation";
-	}
-	
+  int iter;
 
-	private void makeList() {
-		int iter = 0;
-		while (iter <= 1_000_000 && subjectTimeOnWeeks.size() > 0) {
-			iter++;
+  List<Subject> subjects;
+  List<Teacher> teachers;
+  List<Classes> classes;
+  List<ClassesSubjectTimeOnWeek> subjectTimeOnWeeks;
+  // день недели
+  // класс
+  // урок
+  Lesson[][][] lessons = new Lesson[5][11][7];
 
-			if(iter%1000==0) {
-				System.out.println("iter: "+iter);
-			}
-			
-			
-			// получаем случайное требование
-			int int1 = rand.nextInt(subjectTimeOnWeeks.size());
-			ClassesSubjectTimeOnWeek subjectTimeOnWeek = subjectTimeOnWeeks.get(int1);
-
-			// получаем случайный день недели
-			int numberOfCurrentDay = rand.nextInt(lessons.length);
-			Lesson[][] randomDay = lessons[numberOfCurrentDay];
-
-			// получаем все уроки класса
-			Lesson[] classLessons = randomDay[subjectTimeOnWeek.getClasses().getNumber()-1];
-			// получаем случайный номер урока по счету выбоанного класса в выбранный день
-			int lessonOnDayNumber = rand.nextInt(classLessons.length);
-			Lesson lesson = classLessons[lessonOnDayNumber];
-			// если место не свободно - пропустить
-			if (lesson != null) {
-				continue;
-			}
-
-			// если свободно - выбрать препода, проверить на совместимость
-			Set<Teacher> subjectTeachers = subjectTimeOnWeek.getSubject().getTeachers();
-			Object[] array = subjectTeachers.toArray();
-			Teacher teacher = (Teacher) array[rand.nextInt(array.length)];
-			// проверяем, нет ли в этот же день у других классов с этим же преподом урока в
-			// это же время
-			boolean canSetLesson = checkPossibleSetLesson(randomDay, lessonOnDayNumber, teacher);
-			if (!canSetLesson) {
-				continue;
-			}
-			
-			
-			//создаем урок
-			Lesson newLesson = new Lesson();
-			newLesson.setClasses(subjectTimeOnWeek.getClasses());
-			newLesson.setTeacher(teacher);
-			newLesson.setDay(numberOfCurrentDay);
-			newLesson.setTime(lessonOnDayNumber);
-			newLesson.setSubject(subjectTimeOnWeek.getSubject());
-			lessons[numberOfCurrentDay][subjectTimeOnWeek.getClasses().getNumber()-1][lessonOnDayNumber] = newLesson;
+  Random rand = new Random();
 
 
-			subjectTimeOnWeek.setHoursInWeek(subjectTimeOnWeek.getHoursInWeek()-1);
-			if(subjectTimeOnWeek.getHoursInWeek()==0) {
-				subjectTimeOnWeeks.remove(int1);
-			}
-		}
+  @GetMapping
+  public String getList(Model model) {
 
-		System.out.println("iteration: "+iter);
+    readAllToGeneration();
+      readAllToGeneration();
+      makeList();
 
-	}
+    model.addAttribute("list", lessons);
+    model.addAttribute("message1", "Шагов генерации - " + iter);
+    model.addAttribute("message2",
+        "Осталось предметов " + subjectTimeOnWeeks.size()
+            + " (" + subjectTimeOnWeeks + ")");
+    return "generation";
+  }
 
-	private boolean checkPossibleSetLesson(Lesson[][] randomDay, int lessonOnDayNumber, Teacher teacher) {
-		for (Lesson[] lesonAllClassesInCurrentDay : randomDay) {
-			if (lesonAllClassesInCurrentDay[lessonOnDayNumber] != null
-					&& lesonAllClassesInCurrentDay[lessonOnDayNumber].getTeacher().equals(teacher)) {
-				return false;
-			}
-		}
-		return true;
-	}
+  private void readAllToGeneration() {
+    lessons = new Lesson[5][11][7];
+    subjects = subjectService.readAll();
+    teachers = teacherService.readAll();
+    classes = classesService.readAll();
+    subjectTimeOnWeeks = classesSubjectTimeOnWeekService.readAll();
+  }
+
+
+  private void makeList() {
+    iter = 0;
+    while (iter < 1_000_000 && subjectTimeOnWeeks.size() > 0) {
+      iter++;
+
+      // получаем случайное требование
+      int randomLessonConditionId = rand.nextInt(subjectTimeOnWeeks.size());
+      ClassesSubjectTimeOnWeek subjectTimeOnWeek = subjectTimeOnWeeks.get(randomLessonConditionId);
+
+      // получаем случайный день недели
+      int randomDayOfWeekNumber = rand.nextInt(lessons.length);
+      Lesson[][] randomDay = lessons[randomDayOfWeekNumber];
+
+      // получаем все уроки класса
+      Lesson[] classLessons = randomDay[subjectTimeOnWeek.getClasses().getNumber() - 1];
+      // получаем случайный номер урока по счету выбранного класса в выбранный день
+      int lessonOnDayNumber = rand.nextInt(classLessons.length);
+      Lesson lesson = classLessons[lessonOnDayNumber];
+      // если место не свободно - пропустить
+      if (lesson != null) {
+        continue;
+      }
+
+      // если свободно - выбрать препода, проверить на совместимость
+      Teacher teacher = getTeacherBySubject(subjectTimeOnWeek);
+      // проверяем, нет ли в этот же день у других классов с этим же преподом урока в
+      // это же время
+      boolean canSetLesson = checkPossibleSetLesson(randomDay, lessonOnDayNumber, teacher);
+      if (!canSetLesson) {
+        continue;
+      }
+
+      //создаем урок
+      Lesson newLesson = createLesson(subjectTimeOnWeek, randomDayOfWeekNumber, lessonOnDayNumber,
+          teacher);
+
+      addLessonToArray(randomLessonConditionId, subjectTimeOnWeek, randomDayOfWeekNumber,
+          lessonOnDayNumber, newLesson);
+    }
+
+  }
+
+  private Teacher getTeacherBySubject(ClassesSubjectTimeOnWeek subjectTimeOnWeek) {
+    Set<Teacher> subjectTeachers = subjectTimeOnWeek.getSubject().getTeachers();
+    Object[] array = subjectTeachers.toArray();
+    Teacher teacher = (Teacher) array[rand.nextInt(array.length)];
+    return teacher;
+  }
+
+  private void addLessonToArray(int randomLessonConditionId,
+      ClassesSubjectTimeOnWeek subjectTimeOnWeek,
+      int randomDayOfWeekNumber, int lessonOnDayNumber, Lesson newLesson) {
+    lessons[randomDayOfWeekNumber][subjectTimeOnWeek.getClasses().getNumber()
+        - 1][lessonOnDayNumber] = newLesson;
+
+    subjectTimeOnWeek.setHoursInWeek(subjectTimeOnWeek.getHoursInWeek() - 1);
+    if (subjectTimeOnWeek.getHoursInWeek() == 0) {
+      subjectTimeOnWeeks.remove(randomLessonConditionId);
+    }
+  }
+
+  private Lesson createLesson(ClassesSubjectTimeOnWeek subjectTimeOnWeek, int randomDayOfWeekNumber,
+      int lessonOnDayNumber, Teacher teacher) {
+    Lesson newLesson = new Lesson();
+    newLesson.setClasses(subjectTimeOnWeek.getClasses());
+    newLesson.setTeacher(teacher);
+    newLesson.setDay(randomDayOfWeekNumber);
+    newLesson.setTime(lessonOnDayNumber);
+    newLesson.setSubject(subjectTimeOnWeek.getSubject());
+    return newLesson;
+  }
+
+  private boolean checkPossibleSetLesson(Lesson[][] randomDay, int lessonOnDayNumber,
+      Teacher teacher) {
+    for (Lesson[] lessonAllClassesInCurrentDay : randomDay) {
+      if (lessonAllClassesInCurrentDay[lessonOnDayNumber] != null
+          && lessonAllClassesInCurrentDay[lessonOnDayNumber].getTeacher().equals(teacher)) {
+        return false;
+      }
+    }
+    return true;
+  }
 
 
 }
